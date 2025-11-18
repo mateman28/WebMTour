@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import Image from "next/image"
+import { FileText, MapPin, Calendar, Users, Star } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface Tour {
   id: string
@@ -15,6 +17,7 @@ interface Tour {
   highlights: string[]
   included_services: string[]
   image_url: string
+  pdf_url: string
 }
 
 interface TourCardProps {
@@ -22,12 +25,20 @@ interface TourCardProps {
 }
 
 export function TourCard({ tour }: TourCardProps) {
+  const handleDownload = (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
+      // จำลองการดาวน์โหลด
+      alert(`กำลังดาวน์โหลดโปรแกรมทัวร์: ${tour.title}.pdf`);
+      
+      // Note: ถ้าต้องการให้ Link ทำงานต่อเพื่อดาวน์โหลดไฟล์จริงๆ 
+      // ปกติเราจะไม่ใส่ e.preventDefault() หรือต้องเขียน Logic สั่งโหลดไฟล์ต่อท้ายครับ
+  };
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="p-0">
         <div className="relative h-48 w-full">
           <Image
-            src={tour.image_url || `/placeholder.svg?height=200&width=400&query=${encodeURIComponent(tour.title)}`}
+            src={tour.image_url || `/placeholder.svg?height=400&width=400&query=${encodeURIComponent(tour.title)}`}
             alt={tour.title}
             fill
             className="object-cover"
@@ -77,11 +88,26 @@ export function TourCard({ tour }: TourCardProps) {
           </div>
         </div>
       </CardContent>
-
+      
+      
       <CardFooter className="p-6 pt-0">
-        <Link href={`/tours/${tour.id}`} className="w-full">
-          <Button className="w-full bg-blue-600 hover:bg-blue-700">{"ดูรายละเอียดและจอง"}</Button>
-        </Link>
+        <a href={`/tours/${tour.id}`} className="flex-1">
+            <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                ดูรายละเอียดและจอง
+            </Button>
+          </a>
+          {tour.pdf_url && (
+             <a 
+                href={tour.pdf_url} 
+                onClick={handleDownload}
+                title="ดาวน์โหลดโปรแกรมทัวร์ (PDF)"
+                className="flex-none"
+             >
+                <Button variant="outline" size="icon" className="w-10 h-10 border-blue-100 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200">
+                    <FileText className="h-5 w-5" />
+                </Button>
+             </a>
+          )}
       </CardFooter>
     </Card>
   )

@@ -22,6 +22,7 @@ interface Tour {
     max_participants: number // เพิ่มตาม Type requirement
     highlights: string[] // เพิ่มตาม Type requirement
     included_services: string[] // เพิ่มตาม Type requirement
+    pdf_url: string // เพิ่มตาม Type requirement
 
 }
 
