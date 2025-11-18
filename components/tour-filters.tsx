@@ -18,24 +18,24 @@ interface TourFiltersProps {
 
 export function TourFilters({ onFilter }: TourFiltersProps) {
   const [location, setLocation] = useState("")
-  const [priceRange, setPriceRange] = useState("")
+  //const [priceRange, setPriceRange] = useState("")
   const [duration, setDuration] = useState("")
 
   const handleSearch = () => {
     onFilter({
       location,
-      priceRange,
+      //priceRange,
       duration,
     })
   }
 
   const handleReset = () => {
     setLocation("")
-    setPriceRange("")
+    //setPriceRange("")
     setDuration("")
     onFilter({
       location: "",
-      priceRange: "",
+      //priceRange: "",
       duration: "",
     })
   }
@@ -56,11 +56,12 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
                 <SelectItem value="ภูเก็ต">{"ภูเก็ต"}</SelectItem>
                 <SelectItem value="กรุงเทพมหานคร">{"กรุงเทพมหานคร"}</SelectItem>
                 <SelectItem value="เชียงราย">{"เชียงราย"}</SelectItem>
-                <SelectItem value="กระบี่">{"กระบี่"}</SelectItem>
+                <SelectItem value="ญี่ปุ่น">{"ทัวร์ญี่ปุ่น"}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
+          {/*
           <div className="space-y-2">
             <Label htmlFor="price-range">{"ช่วงราคา"}</Label>
             <Select value={priceRange} onValueChange={setPriceRange}>
@@ -76,6 +77,7 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
               </SelectContent>
             </Select>
           </div>
+        */}
 
           <div className="space-y-2">
             <Label htmlFor="duration">{"ระยะเวลา"}</Label>
