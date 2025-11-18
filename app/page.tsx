@@ -6,6 +6,7 @@ import { TourCard } from "@/components/tour-card"
 import { TourFilters } from "@/components/tour-filters"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import Image from "next/image"
 
 interface Tour {
   id: string
@@ -94,8 +95,14 @@ export default function HomePage() {
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="text-xl font-bold text-blue-600">
-              {"Mtour เอาไว้ใส่ logo"}
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/Logo1.jpg" // <-- Next.js จะรู้เองว่าไฟล์นี้อยู่ใน /public
+                alt="WebMTour Logo"
+                width={140}
+                height={40}
+                className="object-contain"
+              />
             </Link>
             <Link href="/admin">
               <Button variant="outline" size="sm">
@@ -107,8 +114,14 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-600 to-teal-600 text-white py-20">
-        <div className="container mx-auto px-4 text-center">
+      <section className="relative text-white py-20 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/hero-bg.jpg')" }}
+        >
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+        </div> 
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 text-balance">{"ค้นพบประสบการณ์การเดินทางที่ไม่เหมือนใคร"}</h1>
           <p className="text-xl md:text-2xl mb-8 text-blue-100 max-w-3xl mx-auto text-pretty">
             {"เลือกแพ็คเกจทัวร์ที่ใช่สำหรับคุณ พร้อมบริการครบครันและประสบการณ์ที่น่าจดจำ"}
