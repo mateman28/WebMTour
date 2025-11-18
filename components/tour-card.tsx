@@ -26,9 +26,9 @@ interface TourCardProps {
 
 export function TourCard({ tour }: TourCardProps) {
   const handleDownload = (e: React.MouseEvent<HTMLAnchorElement>) => {
-      e.preventDefault();
+      //e.preventDefault();
       // จำลองการดาวน์โหลด
-      alert(`กำลังดาวน์โหลดโปรแกรมทัวร์: ${tour.title}.pdf`);
+      //alert(`กำลังดาวน์โหลดโปรแกรมทัวร์: ${tour.title}.pdf`);
       
       // Note: ถ้าต้องการให้ Link ทำงานต่อเพื่อดาวน์โหลดไฟล์จริงๆ 
       // ปกติเราจะไม่ใส่ e.preventDefault() หรือต้องเขียน Logic สั่งโหลดไฟล์ต่อท้ายครับ
@@ -36,7 +36,7 @@ export function TourCard({ tour }: TourCardProps) {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <CardHeader className="p-0">
-        <div className="relative h-48 w-full">
+        <div className="relative w-full aspect-[4/4]">
           <Image
             src={tour.image_url || `/placeholder.svg?height=400&width=400&query=${encodeURIComponent(tour.title)}`}
             alt={tour.title}
@@ -90,20 +90,22 @@ export function TourCard({ tour }: TourCardProps) {
       </CardContent>
       
       
-      <CardFooter className="p-6 pt-0">
-        <a href={`/tours/${tour.id}`} className="flex-1">
+      <CardFooter className="p-6 pt-0 flex gap-2">
+        <Link href={`/tours/${tour.id}`} className="flex-1">
             <Button className="w-full bg-blue-600 hover:bg-blue-700">
                 ดูรายละเอียดและจอง
             </Button>
-          </a>
+        </Link>
           {tour.pdf_url && (
              <a 
                 href={tour.pdf_url} 
+                target="_blank" // แนะนำ: เปิดแท็บใหม่
+                rel="noopener noreferrer" // ความปลอดภัยเมื่อเปิดแท็บใหม่
                 onClick={handleDownload}
                 title="ดาวน์โหลดโปรแกรมทัวร์ (PDF)"
                 className="flex-none"
              >
-                <Button variant="outline" size="icon" className="w-10 h-10 border-blue-100 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200">
+                <Button variant="outline" size="icon" className="w-10 h-10 border-blue-100 text-blue-600 hover:bg-blue-50">
                     <FileText className="h-5 w-5" />
                 </Button>
              </a>
