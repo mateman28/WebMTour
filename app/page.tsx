@@ -18,11 +18,16 @@ interface Tour {
   image_url: string
   is_active: boolean
   created_at: string
+  duration_days: number // เพิ่มตาม Type requirement
+    max_participants: number // เพิ่มตาม Type requirement
+    highlights: string[] // เพิ่มตาม Type requirement
+    included_services: string[] // เพิ่มตาม Type requirement
+
 }
 
 interface FilterValues {
   location: string
-  priceRange: string
+  //priceRange: string
   duration: string
 }
 
@@ -67,6 +72,7 @@ export default function HomePage() {
     }
 
     // กรองตามช่วงราคา
+    /*
     if (filters.priceRange && filters.priceRange !== "all") {
       const [min, max] = filters.priceRange.split("-").map(Number)
       if (max) {
@@ -75,6 +81,7 @@ export default function HomePage() {
         filtered = filtered.filter((tour) => tour.price >= min)
       }
     }
+    */
 
     // กรองตามระยะเวลา
     if (filters.duration && filters.duration !== "all") {

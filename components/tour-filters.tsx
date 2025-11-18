@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 
 interface FilterValues {
   location: string
-  priceRange: string
+  //priceRange: string
   duration: string
 }
 
