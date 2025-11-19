@@ -25,6 +25,7 @@ interface BookingData {
     location: string
     duration_days: number
   }
+  bookingid: string
 }
 
 export default function BookingSuccessPage() {
@@ -143,7 +144,7 @@ export default function BookingSuccessPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold text-sm text-muted-foreground mb-1">{"หมายเลขการจอง"}</h3>
-                  <p className="font-mono text-sm">{booking.id}</p>
+                  <p className="font-mono text-sm">{booking.bookingid}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold text-sm text-muted-foreground mb-1">{"สถานะ"}</h3>

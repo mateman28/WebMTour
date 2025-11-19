@@ -27,6 +27,7 @@ interface Tour {
 }
 
 interface FilterValues {
+  query: string
   location: string
   //priceRange: string
   duration: string
@@ -67,6 +68,14 @@ export default function HomePage() {
   const handleFilter = (filters: FilterValues) => {
     let filtered = [...tours]
 
+    // 1. กรอง Text (Query)
+    if (filters.query) {
+      const lowerQuery = filters.query.toLowerCase()
+      filtered = filtered.filter((tour) => 
+        tour.title.toLowerCase().includes(lowerQuery) || 
+        tour.location.toLowerCase().includes(lowerQuery)
+      )
+    }
     // กรองตามจุดหมาย
     if (filters.location && filters.location !== "all") {
       filtered = filtered.filter((tour) => tour.location.includes(filters.location))
