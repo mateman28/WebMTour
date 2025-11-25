@@ -39,6 +39,7 @@ export default function NewTourPage() {
     OwnerTour: "",
     Code_Tour_owner: "",
     Link_Owner: "",
+
   })
 
   // State สำหรับวันที่และราคาที่กำลังจะกดเพิ่ม (เหมือนเดิม)
@@ -87,25 +88,60 @@ export default function NewTourPage() {
     setIsSaving(true)
 
     // 🟢 เลือกเฉพาะฟิลด์ที่ต้องการส่งไป (Exclude tour_dates)
+    /*
       const basicTourData = {
           title: tour.title,
           description: tour.description,
-          location: tour.location,
           price: tour.price,
-          duration_days: tour.duration_days,
+          duration_days: tour.duration_days, // Backend รับค่า duration (ต้องเช็คว่า Backend ใช้ duration หรือ duration_days)
           max_participants: tour.max_participants,
-          is_active: tour.is_active,
+          
+          // ❌ ของเดิม: location: tour.location, 
+          // ✅ ต้องเปลี่ยนเป็น key ว่า destination ตาม Backend
+          location: tour.location, 
+          
+          image_url: tour.image_url,
+
+          // 🟢 เพิ่มฟิลด์ใหม่ที่ต้องการบันทึกไปด้วย
+          pdf_url: tour.pdf_url,
+          OwnerTour: tour.OwnerTour,
+          Code_Tour_owner: tour.Code_Tour_owner,
+          Link_Owner: tour.Link_Owner,
+          is_active: true
+
+          
       };
+      */
       // ----------------------------------------------------
 
+      // 🟢 แก้ตรงนี้: รวม tour_dates เข้าไปใน Object ที่จะส่ง
+      const payload = {
+            title: tour.title,
+            description: tour.description,
+            price: tour.price,
+            duration_days: tour.duration_days,
+            max_participants: tour.max_participants,
+            location: tour.location,
+            image_url: tour.image_url,
+            pdf_url: tour.pdf_url,
+            OwnerTour: tour.OwnerTour,
+            Code_Tour_owner: tour.Code_Tour_owner,
+            Link_Owner: tour.Link_Owner,
+            is_active: true,
+
+            // ✅ เพิ่มบรรทัดนี้ ส่ง array รอบวันที่ไปด้วย
+            tour_dates: tour.tour_dates 
+      };
+
     try {
-      console.log("🚀 ข้อมูลที่จะส่งไป API (Basic Data):", basicTourData);
+      //console.log("🚀 ข้อมูลที่จะส่งไป API (Basic Data):", basicTourData)
       const response = await fetch("/api/tours", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(basicTourData), // 🟢 ข้อมูลทั้งหมดใน tour state ถูกส่งไป 
+        //body: JSON.stringify(basicTourData), // 🟢 ข้อมูลทั้งหมดใน tour state ถูกส่งไป 
+        body: JSON.stringify(payload), // 🟢 ข้อมูลทั้งหมดใน tour state ถูกส่งไป 
       })
 
       
