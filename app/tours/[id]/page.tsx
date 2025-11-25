@@ -12,7 +12,19 @@ export default async function TourPage({ params }: TourPageProps) {
   const supabase = await createClient()
 
   // ดึงข้อมูลทัวร์
-  const { data: tour, error } = await supabase.from("tours").select("*").eq("id", id).eq("is_active", true).single()
+  //const { data: tour, error } = await supabase.from("tours").select("*").eq("id", id).eq("is_active", true).single()
+  const { data: tour ,error} = await supabase
+  .from('tours')
+  .select(`
+    *,
+    tour_dates (
+      start_date,
+      end_date,
+      price,
+      status
+    )
+  `) // 👈 ต้องมีบรรทัดพวกนี้
+  .eq("id", id).eq("is_active", true).single()
 
   if (error || !tour) {
     notFound()

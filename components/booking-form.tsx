@@ -1,7 +1,8 @@
 "use client"
 
 import type React from "react"
-import { useState, useMemo } from "react"
+// 🟢 เพิ่ม import useEffect
+import { useState, useMemo, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,7 +10,6 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-// 🟢 1. เพิ่ม Icon FileText
 import { CalendarIcon, Minus, Plus, Home, FileText } from "lucide-react" 
 import { format, parseISO, isSameDay } from "date-fns"
 import { th } from "date-fns/locale"
@@ -29,7 +29,6 @@ interface Tour {
   price: number
   max_participants: number
   tour_dates?: TourDate[]
-  // 🟢 2. เพิ่มฟิลด์ pdf_url
   pdf_url?: string 
 }
 
@@ -48,13 +47,20 @@ export function BookingForm({ tour }: BookingFormProps) {
       .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
   }, [tour.tour_dates])
 
-  // ตั้งค่าเริ่มต้นเป็นวันที่แรกสุดที่มี
+  // ตั้งค่าเริ่มต้น
   const [bookingDate, setBookingDate] = useState<Date | undefined>(() => {
     if (availableDates.length > 0) {
       return parseISO(availableDates[0].start_date)
     }
     return undefined
   })
+
+  // 🟢 เพิ่ม useEffect: เมื่อข้อมูลวันที่ (availableDates) มาถึง ให้เลือกวันแรกให้อัตโนมัติ
+  useEffect(() => {
+    if (availableDates.length > 0 && !bookingDate) {
+       setBookingDate(parseISO(availableDates[0].start_date))
+    }
+  }, [availableDates, bookingDate])
 
   const [participants, setParticipants] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
@@ -154,7 +160,8 @@ export function BookingForm({ tour }: BookingFormProps) {
                     if (availableDates.length === 0) return true
                     return !availableDates.some(d => isSameDay(parseISO(d.start_date), date))
                   }}
-                  defaultMonth={availableDates.length > 0 ? parseISO(availableDates[0].start_date) : new Date()}
+                  // ให้ปฏิทินเด้งไปที่เดือนของวันแรกที่มี หรือวันที่เลือกอยู่
+                  defaultMonth={bookingDate || (availableDates.length > 0 ? parseISO(availableDates[0].start_date) : new Date())}
                   initialFocus
                 />
               </PopoverContent>
@@ -261,7 +268,7 @@ export function BookingForm({ tour }: BookingFormProps) {
             {isLoading ? "กำลังจอง..." : "จองเลย"}
           </Button>
 
-          {/* 🟢 3. ปุ่ม Download PDF (แสดงเฉพาะถ้ามี link) */}
+          {/* ปุ่ม Download PDF */}
           {tour.pdf_url && (
              <Button
                 type="button"
