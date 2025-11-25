@@ -36,7 +36,9 @@ export async function POST(request: NextRequest) {
         OwnerTour,
         Code_Tour_owner,
         Link_Owner,
-        tour_dates
+        tour_dates,
+        highlights, 
+        included_services
        } = body
 
     if (!title || !description || !price || !duration_days || !max_participants || !location) {
@@ -63,6 +65,8 @@ export async function POST(request: NextRequest) {
           Link_Owner: Link_Owner || null,
 
           is_active: true,
+          highlights: highlights || [],
+          included_services: included_services || [],
         },
       ])
       .select()

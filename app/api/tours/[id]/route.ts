@@ -54,11 +54,16 @@ export async function PUT(request: NextRequest, { params }: Context) {
 
     const { 
         title, description, price, 
-        duration_days, // รับค่าชื่อ duration_days
+        duration_days, 
         max_participants, 
-        location, // หรือ location (เช็ค DB ให้ดี)
+        location, 
         image_url, is_active,
         pdf_url, OwnerTour, Code_Tour_owner, Link_Owner,
+        
+        // 🟢 เพิ่มการรับค่า highlights และ included_services
+        highlights, 
+        included_services,
+
         tour_dates 
     } = body
 
@@ -74,13 +79,17 @@ export async function PUT(request: NextRequest, { params }: Context) {
         price: Number.parseFloat(price),
         duration_days: Number.parseInt(duration_days),
         max_participants: Number.parseInt(max_participants),
-        location : location, // อย่าลืมเช็คชื่อ column ใน DB
+        location : location, 
         image_url: image_url || null,
         
         pdf_url: pdf_url || null,
         OwnerTour: OwnerTour || null,
         Code_Tour_owner: Code_Tour_owner || null,
         Link_Owner: Link_Owner || null,
+
+        // 🟢 อัปเดตข้อมูล Array (ถ้าไม่มีส่งมาให้เป็น array ว่าง)
+        highlights: highlights || [],
+        included_services: included_services || [],
 
         is_active: is_active !== undefined ? is_active : true,
         updated_at: new Date().toISOString(),

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { ArrowLeft, Plus, Trash2, Calendar, Link as LinkIcon, Image as ImageIcon } from "lucide-react"
+import { ArrowLeft, Plus, Trash2, Calendar, Link as LinkIcon, Image as ImageIcon, CheckCircle, X } from "lucide-react"
 import Link from "next/link"
 
 interface TourDate {
@@ -40,6 +40,10 @@ export default function NewTourPage() {
     Code_Tour_owner: "",
     Link_Owner: "",
 
+    // 🟢 เพิ่ม 2 ตัวแปรนี้ (เป็น Array)
+    highlights: [] as string[],
+    included_services: [] as string[],
+
   })
 
   // State สำหรับวันที่และราคาที่กำลังจะกดเพิ่ม (เหมือนเดิม)
@@ -48,6 +52,40 @@ export default function NewTourPage() {
     end_date: "", 
     price: 0.00 
   })
+
+  // 🟢 State สำหรับรับค่า Input ชั่วคราว (ก่อนกดปุ่มบวก)
+  const [tempHighlight, setTempHighlight] = useState("")
+  const [tempService, setTempService] = useState("")
+
+  // --- ฟังก์ชันจัดการ Highlights ---
+  const addHighlight = () => {
+    if (!tempHighlight.trim()) return
+    setTour(prev => ({ ...prev, highlights: [...prev.highlights, tempHighlight] }))
+    setTempHighlight("") // ล้างช่องกรอก
+  }
+
+  const removeHighlight = (index: number) => {
+    setTour(prev => ({ ...prev, highlights: prev.highlights.filter((_, i) => i !== index) }))
+  }
+
+  // --- ฟังก์ชันจัดการ Included Services ---
+  const addService = () => {
+    if (!tempService.trim()) return
+    setTour(prev => ({ ...prev, included_services: [...prev.included_services, tempService] }))
+    setTempService("") // ล้างช่องกรอก
+  }
+
+  const removeService = (index: number) => {
+    setTour(prev => ({ ...prev, included_services: prev.included_services.filter((_, i) => i !== index) }))
+  }
+
+  // Helper: กด Enter เพื่อเพิ่มรายการได้เลย (ไม่ Submit Form)
+  const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      action()
+    }
+  }
 
   // อัปเดตราคาของ newDate ให้เท่ากับราคาหลัก (Base Price) เมื่อมีการเปลี่ยนราคาหลัก
   useEffect(() => {
@@ -130,7 +168,11 @@ export default function NewTourPage() {
             is_active: true,
 
             // ✅ เพิ่มบรรทัดนี้ ส่ง array รอบวันที่ไปด้วย
-            tour_dates: tour.tour_dates 
+            tour_dates: tour.tour_dates,
+
+            // 🟢 เพิ่ม 2 บรรทัดนี้
+            highlights: tour.highlights,
+            included_services: tour.included_services
       };
 
     try {
@@ -253,6 +295,66 @@ export default function NewTourPage() {
               />
             </div>
             
+            {/* 🟢 ส่วน Highlights */}
+            <div className="space-y-3">
+              <Label>จุดเด่นทัวร์ (Highlights)</Label>
+              <div className="flex gap-2">
+                <Input 
+                  value={tempHighlight}
+                  onChange={(e) => setTempHighlight(e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, addHighlight)}
+                  placeholder="พิมพ์จุดเด่น เช่น 'ชมพระอาทิตย์ขึ้นที่ดอย...'"
+                />
+                <Button type="button" onClick={addHighlight} variant="secondary">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {/* รายการที่เพิ่มแล้ว */}
+              <div className="space-y-2 mt-2">
+                {tour.highlights.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between bg-slate-50 p-2 rounded border">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm">{item}</span>
+                    </div>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => removeHighlight(index)}>
+                      <X className="h-4 w-4 text-slate-400 hover:text-red-500" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 🟢 ส่วน Included Services (บริการที่รวมในทัวร์) */}
+            <div className="space-y-3">
+              <Label>บริการที่รวมในทัวร์ (Included Services)</Label>
+              <div className="flex gap-2">
+                <Input 
+                  value={tempService}
+                  onChange={(e) => setTempService(e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, addService)}
+                  placeholder="เช่น 'รถรับส่ง', 'อาหารกลางวัน'"
+                />
+                <Button type="button" onClick={addService} variant="secondary">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* รายการที่เพิ่มแล้ว */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                {tour.included_services.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between bg-blue-50/50 p-2 rounded border border-blue-100">
+                     <span className="text-sm px-2">{item}</span>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => removeService(index)}>
+                      <X className="h-4 w-4 text-slate-400 hover:text-red-500" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>  
+
+
             {/* 🟢 ส่วนเพิ่มฟิลด์ Owner/Code/Link */}
             <h3 className="text-lg font-semibold pt-4">ข้อมูลผู้ดำเนินการทัวร์</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

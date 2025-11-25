@@ -9,13 +9,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { ArrowLeft, Upload, X, Calendar, Plus, Trash2, Link as LinkIcon } from "lucide-react"
+import { ArrowLeft, Upload, X, Calendar, Plus, Trash2, Link as LinkIcon, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
 // Interface สำหรับรอบวันที่
 interface TourDate {
-  id?: number // มี id กรณีเป็นข้อมูลเดิม
+  id?: number 
   start_date: string
   end_date: string
   price: number
@@ -36,7 +36,10 @@ interface Tour {
   OwnerTour?: string
   Code_Tour_owner?: string
   Link_Owner?: string
-  tour_dates?: TourDate[] // เพิ่มรายการวันที่
+  tour_dates?: TourDate[]
+  // 🟢 เพิ่ม 2 ฟิลด์ใหม่ (Array)
+  highlights?: string[]
+  included_services?: string[]
 }
 
 export default function EditTourPage() {
@@ -63,8 +66,15 @@ export default function EditTourPage() {
     OwnerTour: "",
     Code_Tour_owner: "",
     Link_Owner: "",
-    tour_dates: []
+    tour_dates: [],
+    // 🟢 ค่าเริ่มต้นเป็น Array ว่าง
+    highlights: [],
+    included_services: []
   })
+
+  // 🟢 State สำหรับ Input ชั่วคราว
+  const [tempHighlight, setTempHighlight] = useState("")
+  const [tempService, setTempService] = useState("")
 
   // State สำหรับวันที่ใหม่ที่กำลังจะเพิ่ม
   const [newDate, setNewDate] = useState<TourDate>({
@@ -95,7 +105,7 @@ export default function EditTourPage() {
         id: data.id,
         title: data.title || "",
         description: data.description || "",
-        location: data.location  || "", // รองรับทั้งชื่อเก่าและใหม่
+        location: data.location  || "",
         price: data.price || 0,
         duration_days: data.duration_days || data.duration || 1,
         max_participants: data.max_participants || 1,
@@ -105,8 +115,10 @@ export default function EditTourPage() {
         OwnerTour: data.OwnerTour || "",
         Code_Tour_owner: data.Code_Tour_owner || "",
         Link_Owner: data.Link_Owner || "",
-        // ถ้า API ส่ง tour_dates มาด้วยให้ใช้ ถ้าไม่มีให้เป็น array ว่าง
-        tour_dates: data.tour_dates || [] 
+        tour_dates: data.tour_dates || [],
+        // 🟢 Map ข้อมูล Array
+        highlights: data.highlights || [],
+        included_services: data.included_services || []
       })
 
       if (data.image_url) {
@@ -155,7 +167,35 @@ export default function EditTourPage() {
     }
   }
 
-  // --- จัดการรอบวันที่ (เหมือนหน้า New) ---
+  // 🟢 --- ฟังก์ชันจัดการ Highlights & Services ---
+  const addHighlight = () => {
+    if (!tempHighlight.trim()) return
+    setFormData(prev => ({ ...prev, highlights: [...(prev.highlights || []), tempHighlight] }))
+    setTempHighlight("")
+  }
+
+  const removeHighlight = (index: number) => {
+    setFormData(prev => ({ ...prev, highlights: prev.highlights?.filter((_, i) => i !== index) }))
+  }
+
+  const addService = () => {
+    if (!tempService.trim()) return
+    setFormData(prev => ({ ...prev, included_services: [...(prev.included_services || []), tempService] }))
+    setTempService("")
+  }
+
+  const removeService = (index: number) => {
+    setFormData(prev => ({ ...prev, included_services: prev.included_services?.filter((_, i) => i !== index) }))
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      action()
+    }
+  }
+
+  // --- จัดการรอบวันที่ ---
   const handleAddDate = () => {
     if (newDate.start_date && newDate.end_date && newDate.price > 0) {
       if (new Date(newDate.end_date) < new Date(newDate.start_date)) {
@@ -166,7 +206,6 @@ export default function EditTourPage() {
         ...formData,
         tour_dates: [...(formData.tour_dates || []), newDate],
       })
-      // Reset ฟอร์มวันที่ แต่คงราคาไว้
       setNewDate({ ...newDate, start_date: "", end_date: "" })
     } else {
       alert("กรุณาระบุวันเริ่มต้น, วันสิ้นสุด และราคา")
@@ -180,7 +219,6 @@ export default function EditTourPage() {
     })
   }
 
-  // อัปเดตราคา newDate ตามราคาหลัก
   useEffect(() => {
     if (newDate.price === 0 && formData.price > 0) {
         setNewDate(prev => ({ ...prev, price: formData.price }))
@@ -199,31 +237,30 @@ export default function EditTourPage() {
         if (uploadedUrl) imageUrl = uploadedUrl
       }
 
-      // เตรียมข้อมูลส่งไป Backend
       const payload = {
         title: formData.title,
         description: formData.description,
-        location: formData.location,
+        location: formData.location, // หรือ destination
         price: formData.price,
         duration_days: formData.duration_days,
         max_participants: formData.max_participants,
         is_active: formData.is_active,
         image_url: imageUrl,
-        
-        // ฟิลด์ใหม่
         pdf_url: formData.pdf_url,
         OwnerTour: formData.OwnerTour,
         Code_Tour_owner: formData.Code_Tour_owner,
         Link_Owner: formData.Link_Owner,
+        tour_dates: formData.tour_dates,
         
-        // ส่งรายการวันที่ไปด้วย (Backend ต้องเขียนรองรับการ update/insert)
-        tour_dates: formData.tour_dates
+        // 🟢 ส่ง Array ใหม่ไปด้วย
+        highlights: formData.highlights,
+        included_services: formData.included_services
       }
 
       console.log("Update Payload:", payload)
 
       const response = await fetch(`/api/tours/${params.id}`, {
-        method: "PUT", // หรือ PATCH ตามที่ Backend กำหนด
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
@@ -273,7 +310,6 @@ export default function EditTourPage() {
                   </Button>
                 </div>
               )}
-               {/* URL รูปภาพ */}
                <div className="mt-2">
                    <Label className="text-xs text-muted-foreground">หรือใส่ลิงก์รูปภาพโดยตรง</Label>
                    <Input 
@@ -305,7 +341,62 @@ export default function EditTourPage() {
               <Textarea id="description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={4} required />
             </div>
 
-            {/* ข้อมูล Owner & PDF (เพิ่มใหม่) */}
+            {/* 🟢 ส่วน Highlights & Included Services (เพิ่มใหม่) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Highlights */}
+                <div className="space-y-3">
+                    <Label>จุดเด่นทัวร์ (Highlights)</Label>
+                    <div className="flex gap-2">
+                        <Input 
+                            value={tempHighlight}
+                            onChange={(e) => setTempHighlight(e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, addHighlight)}
+                            placeholder="พิมพ์จุดเด่น..."
+                        />
+                        <Button type="button" onClick={addHighlight} variant="secondary"><Plus className="h-4 w-4" /></Button>
+                    </div>
+                    <div className="space-y-2 mt-2">
+                        {formData.highlights?.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between bg-slate-50 p-2 rounded border">
+                            <div className="flex items-center gap-2">
+                                <CheckCircle className="h-4 w-4 text-green-500" />
+                                <span className="text-sm">{item}</span>
+                            </div>
+                            <Button type="button" variant="ghost" size="sm" onClick={() => removeHighlight(index)}>
+                                <X className="h-4 w-4 text-slate-400 hover:text-red-500" />
+                            </Button>
+                        </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Included Services */}
+                <div className="space-y-3">
+                    <Label>บริการที่รวมในทัวร์ (Included Services)</Label>
+                    <div className="flex gap-2">
+                        <Input 
+                            value={tempService}
+                            onChange={(e) => setTempService(e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, addService)}
+                            placeholder="เช่น รถรับส่ง, อาหาร..."
+                        />
+                        <Button type="button" onClick={addService} variant="secondary"><Plus className="h-4 w-4" /></Button>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 mt-2">
+                        {formData.included_services?.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between bg-blue-50/50 p-2 rounded border border-blue-100">
+                            <span className="text-sm px-2">{item}</span>
+                            <Button type="button" variant="ghost" size="sm" onClick={() => removeService(index)}>
+                                <X className="h-4 w-4 text-slate-400 hover:text-red-500" />
+                            </Button>
+                        </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* ข้อมูล Owner & PDF */}
             <div className="p-4 bg-slate-50 rounded-lg border space-y-4">
                 <h3 className="font-semibold text-sm text-slate-700">ข้อมูลเพิ่มเติม & Owner</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -347,7 +438,7 @@ export default function EditTourPage() {
               </div>
             </div>
 
-            {/* --- ตารางรอบวันที่ (เพิ่มใหม่) --- */}
+            {/* --- ตารางรอบวันที่ --- */}
             <div className="space-y-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-900">
                 <div className="flex items-center space-x-2">
                     <Calendar className="h-5 w-5 text-muted-foreground"/>

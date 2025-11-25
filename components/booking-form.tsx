@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,17 +9,28 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Minus, Plus } from "lucide-react"
-import { format } from "date-fns"
+// 🟢 1. เพิ่ม Icon FileText
+import { CalendarIcon, Minus, Plus, Home, FileText } from "lucide-react" 
+import { format, parseISO, isSameDay } from "date-fns"
 import { th } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
+
+interface TourDate {
+  start_date: string
+  end_date: string
+  price: number
+  status: string
+}
 
 interface Tour {
   id: string
   title: string
   price: number
   max_participants: number
+  tour_dates?: TourDate[]
+  // 🟢 2. เพิ่มฟิลด์ pdf_url
+  pdf_url?: string 
 }
 
 interface BookingFormProps {
@@ -29,7 +39,23 @@ interface BookingFormProps {
 
 export function BookingForm({ tour }: BookingFormProps) {
   const router = useRouter()
-  const [bookingDate, setBookingDate] = useState<Date>()
+
+  // คำนวณวันที่ที่เปิดจองได้
+  const availableDates = useMemo(() => {
+    if (!tour.tour_dates) return []
+    return tour.tour_dates
+      .filter(d => d.status === 'available')
+      .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
+  }, [tour.tour_dates])
+
+  // ตั้งค่าเริ่มต้นเป็นวันที่แรกสุดที่มี
+  const [bookingDate, setBookingDate] = useState<Date | undefined>(() => {
+    if (availableDates.length > 0) {
+      return parseISO(availableDates[0].start_date)
+    }
+    return undefined
+  })
+
   const [participants, setParticipants] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -39,7 +65,16 @@ export function BookingForm({ tour }: BookingFormProps) {
     specialRequests: "",
   })
 
-  const totalPrice = tour.price * participants
+  // คำนวณราคาตามวันที่ที่เลือก
+  const currentPrice = useMemo(() => {
+    if (!bookingDate || !tour.tour_dates) return tour.price
+    const selectedRound = tour.tour_dates.find(d => 
+      isSameDay(parseISO(d.start_date), bookingDate)
+    )
+    return selectedRound ? selectedRound.price : tour.price
+  }, [bookingDate, tour.tour_dates, tour.price])
+
+  const totalPrice = currentPrice * participants
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,9 +88,7 @@ export function BookingForm({ tour }: BookingFormProps) {
     try {
       const response = await fetch("/api/bookings", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tour_id: tour.id,
           user_name: formData.name,
@@ -92,12 +125,13 @@ export function BookingForm({ tour }: BookingFormProps) {
       <CardHeader>
         <CardTitle className="text-xl">{"จองทัวร์นี้"}</CardTitle>
         <div className="text-2xl font-bold text-blue-600">
-          ฿{tour.price.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">/ คน</span>
+          ฿{currentPrice.toLocaleString()} <span className="text-sm font-normal text-muted-foreground">/ คน</span>
         </div>
       </CardHeader>
 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+          
           {/* Date Selection */}
           <div className="space-y-2">
             <Label>{"วันที่เดินทาง"}</Label>
@@ -116,11 +150,18 @@ export function BookingForm({ tour }: BookingFormProps) {
                   mode="single"
                   selected={bookingDate}
                   onSelect={setBookingDate}
-                  disabled={(date) => date < new Date()}
+                  disabled={(date) => {
+                    if (availableDates.length === 0) return true
+                    return !availableDates.some(d => isSameDay(parseISO(d.start_date), date))
+                  }}
+                  defaultMonth={availableDates.length > 0 ? parseISO(availableDates[0].start_date) : new Date()}
                   initialFocus
                 />
               </PopoverContent>
             </Popover>
+            {availableDates.length === 0 && (
+                <p className="text-xs text-red-500">ยังไม่มีรอบการเดินทางที่เปิดรับจอง</p>
+            )}
           </div>
 
           {/* Participants Selection */}
@@ -165,7 +206,6 @@ export function BookingForm({ tour }: BookingFormProps) {
                 placeholder="กรอกชื่อ-นามสกุล"
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="email">{"อีเมล"}</Label>
               <Input
@@ -177,7 +217,6 @@ export function BookingForm({ tour }: BookingFormProps) {
                 placeholder="กรอกอีเมล"
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="phone">{"เบอร์โทรศัพท์"}</Label>
               <Input
@@ -189,7 +228,6 @@ export function BookingForm({ tour }: BookingFormProps) {
                 placeholder="กรอกเบอร์โทรศัพท์"
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="special-requests">{"ความต้องการพิเศษ (ถ้ามี)"}</Label>
               <Textarea
@@ -206,7 +244,7 @@ export function BookingForm({ tour }: BookingFormProps) {
           <div className="border-t pt-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span>{"ราคาต่อคน"}</span>
-              <span>฿{tour.price.toLocaleString()}</span>
+              <span>฿{currentPrice.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>{"จำนวนผู้เข้าร่วม"}</span>
@@ -219,9 +257,32 @@ export function BookingForm({ tour }: BookingFormProps) {
           </div>
 
           {/* Submit Button */}
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading || availableDates.length === 0}>
             {isLoading ? "กำลังจอง..." : "จองเลย"}
           </Button>
+
+          {/* 🟢 3. ปุ่ม Download PDF (แสดงเฉพาะถ้ามี link) */}
+          {tour.pdf_url && (
+             <Button
+                type="button"
+                variant="outline"
+                className="w-full mt-2 border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                onClick={() => window.open(tour.pdf_url, '_blank')}
+             >
+                <FileText className="mr-2 h-4 w-4" /> ดาวน์โหลดโปรแกรมทัวร์ (PDF)
+             </Button>
+          )}
+
+          {/* ปุ่มกลับหน้าหลัก */}
+          <Button 
+            type="button" 
+            variant="ghost" 
+            className="w-full mt-2"
+            onClick={() => router.push('/')}
+          >
+            <Home className="mr-2 h-4 w-4" /> กลับหน้าหลัก
+          </Button>
+
         </form>
       </CardContent>
     </Card>
