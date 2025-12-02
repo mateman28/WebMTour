@@ -155,7 +155,7 @@ export default function HomePage() {
         />
         {/* 2. ส่วนปุ่ม Facebook (จัดวางด้วย Absolute) */}
         <a
-          href="https://www.facebook.com/ชื่อเพจของคุณ"
+          href="https://www.facebook.com/p/NP-Travel-%E0%B9%80%E0%B8%AD%E0%B9%87%E0%B8%99%E0%B8%9E%E0%B8%B5%E0%B8%97%E0%B8%A3%E0%B8%B2%E0%B9%80%E0%B8%A7%E0%B8%A5-100043116431945/"
           target="_blank"
           rel="noopener noreferrer"
           className="absolute bottom-8 right-8 z-20 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full shadow-lg transition-colors"
