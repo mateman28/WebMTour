@@ -30,7 +30,7 @@ interface FilterValues {
   query: string
   location: string
   //priceRange: string
-  duration: string
+  duration_days: string
 }
 
 export default function HomePage() {
@@ -94,15 +94,15 @@ export default function HomePage() {
     */
 
     // กรองตามระยะเวลา
-    if (filters.duration && filters.duration !== "all") {
-      const [min, max] = filters.duration.split("-").map(Number)
+    
+    if (filters.duration_days && filters.duration_days !== "all") {
+      const [min, max] = filters.duration_days.split("-").map(Number)
       if (max) {
-        filtered = filtered.filter((tour) => tour.duration >= min && tour.duration <= max)
+        filtered = filtered.filter((tour) => tour.duration_days >= min && tour.duration_days <= max)
       } else {
-        filtered = filtered.filter((tour) => tour.duration >= min)
+        filtered = filtered.filter((tour) => tour.duration_days >= min)
       }
     }
-
     setFilteredTours(filtered)
   }
 
@@ -130,7 +130,8 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
+      {/* Hero Section 
+      {/*
       <section className="relative text-white py-20 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -144,6 +145,14 @@ export default function HomePage() {
             {"เลือกแพ็คเกจทัวร์ที่ใช่สำหรับคุณ พร้อมบริการครบครันและประสบการณ์ที่น่าจดจำ"}
           </p>
         </div>
+      </section>
+        */}
+      <section className="w-full">
+        <img 
+          src="/hero-bg.jpg" 
+          alt="Hero Background" 
+          className="w-full h-auto object-cover" 
+        />
       </section>
 
       {/* Tours Section */}

@@ -11,7 +11,7 @@ import { Search, X } from "lucide-react" // ใช้ Icon เพื่อคว
 interface FilterValues {
   query: string // เพิ่มค่าสำหรับ Text Search
   location: string
-  duration: string
+  duration_days: string
 }
 
 interface TourFiltersProps {
@@ -22,7 +22,7 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
   // State สำหรับเก็บค่าต่างๆ
   const [query, setQuery] = useState("")
   const [location, setLocation] = useState("all") // default เป็น all เพื่อให้จัดการง่าย
-  const [duration, setDuration] = useState("all")
+  const [duration_days, setDuration] = useState("all")
 
   // ฟังก์ชันส่งค่า Filter กลับไปทำงานทันที (Real-time)
   // เราจะเรียกใช้ฟังก์ชันนี้ทุกครั้งที่มีการเปลี่ยนค่าใน input/select
@@ -30,7 +30,7 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
     onFilter({
       query: newQuery,
       location: newLocation,
-      duration: newDuration,
+      duration_days: newDuration,
     })
   }
 
@@ -38,13 +38,13 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = e.target.value
     setQuery(newQuery)
-    triggerFilter(newQuery, location, duration)
+    triggerFilter(newQuery, location, duration_days)
   }
 
   // จัดการเมื่อเลือกสถานที่
   const handleLocationChange = (value: string) => {
     setLocation(value)
-    triggerFilter(query, value, duration)
+    triggerFilter(query, value, duration_days)
   }
 
   // จัดการเมื่อเลือกระยะเวลา
@@ -100,18 +100,18 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
           {/* 3. เลือกระยะเวลา (Select) - พื้นที่ปานกลาง (3 ส่วน) */}
           <div className="md:col-span-3 space-y-2">
             <Label htmlFor="duration">{"ระยะเวลา"}</Label>
-            <Select value={duration} onValueChange={handleDurationChange}>
+            <Select value={duration_days} onValueChange={handleDurationChange}>
               <SelectTrigger>
                 <SelectValue placeholder="ทุกช่วงเวลา" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{"ทั้งหมด"}</SelectItem>
-                <SelectItem value="1">{"1 วัน"}</SelectItem>
-                <SelectItem value="2">{"2 วัน"}</SelectItem>
-                <SelectItem value="3">{"3 วัน"}</SelectItem>
-                <SelectItem value="4">{"4 วัน"}</SelectItem>
-                <SelectItem value="5">{"5 วัน"}</SelectItem>
-                <SelectItem value="6">{"6 วัน"}</SelectItem>
+                <SelectItem value="1-1">{"1 วัน"}</SelectItem>
+                <SelectItem value="2-2">{"2 วัน"}</SelectItem>
+                <SelectItem value="3-3">{"3 วัน"}</SelectItem>
+                <SelectItem value="4-4">{"4 วัน"}</SelectItem>
+                <SelectItem value="5-5">{"5 วัน"}</SelectItem>
+                <SelectItem value="6-6">{"6 วัน"}</SelectItem>
               </SelectContent>
             </Select>
           </div>
