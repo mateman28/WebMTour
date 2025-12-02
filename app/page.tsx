@@ -283,8 +283,9 @@ export default function HomePage() {
               <h4 className="font-semibold mb-4">{"ติดต่อ"}</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li>{"โทร: 02-xxx-xxxx"}</li>
-                <li>{"อีเมล: info@example.com"}</li>
+                <li>{"อีเมล: info@nptravel.com"}</li>
                 <li>{"LINE: @tourexample"}</li>
+                <li>{"Facebook: NP Travel เอ็นพีทราเวล"}</li>
               </ul>
             </div>
           </div>
