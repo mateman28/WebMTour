@@ -7,6 +7,7 @@ import { TourFilters } from "@/components/tour-filters"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import Image from "next/image"
+import { HeroCarousel } from "@/components/hero-carousel"
 
 interface Tour {
   id: string
@@ -131,6 +132,7 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section 
+      
       {/*
       <section className="relative text-white py-20 overflow-hidden">
         <div
@@ -146,21 +148,29 @@ export default function HomePage() {
           </p>
         </div>
       </section>
+      
         */}
+        {/* ส่ง tours state ไปให้ Carousel แสดงผล */}
+        <HeroCarousel tours={tours} />
+        {/*
       <section className="w-full">
         <img 
           src="/hero-bg.jpg" 
           alt="Hero Background" 
           className="w-full h-auto object-cover" 
         />
+        */}
         {/* 2. ส่วนปุ่ม Facebook (จัดวางด้วย Absolute) */}
+        {/*
         <a
           href="https://www.facebook.com/p/NP-Travel-%E0%B9%80%E0%B8%AD%E0%B9%87%E0%B8%99%E0%B8%9E%E0%B8%B5%E0%B8%97%E0%B8%A3%E0%B8%B2%E0%B9%80%E0%B8%A7%E0%B8%A5-100043116431945/"
           target="_blank"
           rel="noopener noreferrer"
           className="absolute bottom-8 right-8 z-20 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full shadow-lg transition-colors"
         >
+          */}
           {/* ไอคอน Facebook (SVG) */}
+          {/*
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
             width="24" 
@@ -173,7 +183,7 @@ export default function HomePage() {
           <span className="font-medium">Follow us</span>
         </a>
       </section>
-
+      */}
       {/* Tours Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
