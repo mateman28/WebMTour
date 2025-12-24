@@ -84,10 +84,10 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
 
           {/* 2. เลือกจุดหมาย (Select) - พื้นที่ปานกลาง (3 ส่วน) */}
           <div className="md:col-span-3 space-y-2">
-            <Label htmlFor="location">{"จุดหมาย"}</Label>
+            <Label htmlFor="location">{"ประเทศ"}</Label>
             <Select value={location} onValueChange={handleLocationChange}>
               <SelectTrigger>
-                <SelectValue placeholder="ทุกจุดหมาย" />
+                <SelectValue placeholder="ทุกประเทศ" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{"ทั้งหมด"}</SelectItem>
