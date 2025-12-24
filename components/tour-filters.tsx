@@ -81,7 +81,7 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
           
           {/* 1. ช่องค้นหา (Text) - ให้พื้นที่เยอะหน่อย (4 ส่วน) */}
-          <div className="md:col-span-3 space-y-2">
+          <div className="md:col-span-2 space-y-2">
             <Label htmlFor="search">{"ค้นหา"}</Label>
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -96,7 +96,7 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
           </div>
 
           {/* 2. เลือกจุดหมาย (Select) - พื้นที่ปานกลาง (3 ส่วน) */}
-          <div className="md:col-span-3 space-y-2">
+          <div className="md:col-span-2 space-y-2">
             <Label htmlFor="location">{"ประเทศ"}</Label>
             <Select value={location} onValueChange={handleLocationChange}>
               <SelectTrigger>
@@ -157,7 +157,7 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
           </div>
 
           {/* 4. ปุ่ม Reset - พื้นที่ที่เหลือ (2 ส่วน) */}
-          <div className="md:col-span-2 flex">
+          <div className="md:col-span-1 flex">
             <Button 
               onClick={handleReset} 
               variant="outline" 
