@@ -106,6 +106,7 @@ export function TourFilters({ onFilter }: TourFiltersProps) {
                 <SelectItem value="all">{"ทั้งหมด"}</SelectItem>
                 <SelectItem value="เกาหลี">{"ทัวร์เกาหลี"}</SelectItem>
                 <SelectItem value="ญี่ปุ่น">{"ทัวร์ญี่ปุ่น"}</SelectItem>
+                <SelectItem value="อังกฤษ">{"ทัวร์อังกฤษ"}</SelectItem>
               </SelectContent>
             </Select>
           </div>
